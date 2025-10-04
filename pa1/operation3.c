@@ -1,8 +1,8 @@
-
 #include "myheader.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #define MAX_LEN 8192
 #define USER_MAX_INPUT 4096
@@ -40,14 +40,33 @@ void operation3(const char* filename,const char* query){
     query1[query_len - 2] = '\0';
 
     int fd = open(filename,O_RDONLY);
-    if(fd < 0) return;
-
+    if(fd < 0) {
+        write(STDOUT_FILENO, "\n", 1);
+        return;
+    }
+    size_t capacity = MAX_LEN;
+    char* line_buffer = malloc(sizeof(char) * capacity);
+    if (line_buffer == NULL) {
+        close(fd);
+        write(STDOUT_FILENO, "\n", 1);
+        return;
+    }
     char buffer[1];
-    char line_buffer[MAX_LEN];
     int line_idx = 0;
     uint64_t line_number = 1;
 
     while(read(fd,buffer,1) > 0){
+        if (line_idx >= capacity - 1) {
+            capacity *= 2;
+            char* new_buffer = realloc(line_buffer, capacity);
+            if (new_buffer == NULL) {
+                free(line_buffer);
+                close(fd);
+                write(STDOUT_FILENO, "\n", 1);
+                return;
+            }
+            line_buffer = new_buffer;
+        }
         if(buffer[0] != '\n'){
             if(line_idx < MAX_LEN - 1){
                 line_buffer[line_idx++] = buffer[0];
@@ -65,7 +84,7 @@ void operation3(const char* filename,const char* query){
         line_buffer[line_idx] = '\0';
         search_in_line3(line_buffer,query1,line_number);
     }
-
+    free(line_buffer);
     write(STDOUT_FILENO,"\n",1);
     close(fd);
 }
