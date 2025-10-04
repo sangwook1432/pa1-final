@@ -1,8 +1,8 @@
 #include "myheader.h"
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 #define MAX_LEN 8192
 
@@ -33,31 +33,16 @@ void search_in_line1(char* line_buffer, const char* query, uint64_t line_number)
 void operation1(const char* filename,const char* query){
     int fd = open(filename,O_RDONLY);
     if(fd < 0) return;
-
-    char *line_buffer = (char*)malloc(MAX_LEN);
-    if(!line_buffer){
-        close(fd);
-        return;
-    }
-    size_t buffer_size = MAX_LEN;
-
     char buffer[1];
+    char line_buffer[MAX_LEN];
     int line_idx = 0;
     uint64_t line_number = 1;
 
     while(read(fd,buffer,1) > 0){
         if(buffer[0] != '\n'){
-            if(line_idx >= buffer_size - 1){
-                buffer_size *= 2;
-                char *new_buffer = (char*)realloc(line_buffer,buffer_size);
-                if(!new_buffer) {
-                    free(line_buffer);
-                    close(fd);
-                    return;
-                }
-                line_buffer = new_buffer;
+            if(line_idx < MAX_LEN - 1){
+                line_buffer[line_idx++] = buffer[0];
             }
-            line_buffer[line_idx++] = buffer[0];
         }
         else{
             line_buffer[line_idx] = '\0';
@@ -71,8 +56,6 @@ void operation1(const char* filename,const char* query){
         line_buffer[line_idx] = '\0';
         search_in_line1(line_buffer,query,line_number);
     }
-
-    free(line_buffer);
     write(STDOUT_FILENO, "\n", 1);
     close(fd);
 }
