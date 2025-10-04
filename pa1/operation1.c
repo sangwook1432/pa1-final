@@ -2,7 +2,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 #define MAX_LEN 8192
 
