@@ -1,3 +1,4 @@
+
 #include "myheader.h"
 #include <unistd.h>
 #include <fcntl.h>
@@ -41,11 +42,10 @@ void operation3(const char* filename,const char* query){
     int fd = open(filename,O_RDONLY);
     if(fd < 0) return;
 
-    char line_buffer[MAX_LEN];
     char buffer[1];
+    char line_buffer[MAX_LEN];
     int line_idx = 0;
     uint64_t line_number = 1;
-    int capacity = MAX_LEN;
 
     while(read(fd,buffer,1) > 0){
         if(buffer[0] != '\n'){
