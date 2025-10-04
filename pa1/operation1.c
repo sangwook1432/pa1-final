@@ -32,9 +32,8 @@ void search_in_line1(char* line_buffer, const char* query, uint64_t line_number)
 void operation1(const char* filename,const char* query){
     int fd = open(filename,O_RDONLY);
     if(fd < 0) return;
-
-    char line_buffer[MAX_LEN];
     char buffer[1];
+    char line_buffer[MAX_LEN];
     int line_idx = 0;
     uint64_t line_number = 1;
 
