@@ -1,6 +1,7 @@
 #include "myheader.h"
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdlib.h>
 #include <stdint.h>
 
 #define MAX_LEN 8192
@@ -28,9 +29,14 @@ void operation4(const char* filename,const char* query){
         write(STDOUT_FILENO,"\n",1);
         return;
     }
+    char *line_buffer = malloc(sizeof(char) * MAX_LEN);
+    if(!line_buffer){
+        close(fd);
+        return;
+    }
     char buffer[1];
-    char line_buffer[MAX_LEN];
     int line_idx = 0;
+    int capacity = MAX_LEN;
     uint64_t line_number = 1;
 
     if (strchr(query, ' ') != NULL || strchr(query, '*') == NULL) {
@@ -44,7 +50,7 @@ void operation4(const char* filename,const char* query){
     char* star_pos = strchr(query_1, '*');
     
     if (star_pos == query_1 || *(star_pos + 1) == '\0') {
-        write(STDOUT_FILENO,"\n",1); // 규칙 위반: '*'가 맨 앞이나 맨 뒤에 있는 경우
+        write(STDOUT_FILENO,"\n",1);
         return;
     }
 
@@ -53,7 +59,18 @@ void operation4(const char* filename,const char* query){
 
     while(read(fd,buffer,1) > 0){
         if(buffer[0] != '\n'){
-            if(line_idx < MAX_LEN - 1){
+            if(line_idx < capacity - 1){
+                line_buffer[line_idx++] = buffer[0];
+            }
+            else{
+                capacity *= 2;
+                char *new_buffer =  realloc(line_buffer,sizeof(char) * capacity);
+                if(!new_buffer){
+                    free(line_buffer);
+                    close(fd);
+                    return;
+                }
+                line_buffer = new_buffer;
                 line_buffer[line_idx++] = buffer[0];
             }
         }
