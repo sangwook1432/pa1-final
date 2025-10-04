@@ -1,7 +1,6 @@
 #include "myheader.h"
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdio.h>
 #include <stdint.h>
 
 #define MAX_LEN 8192
