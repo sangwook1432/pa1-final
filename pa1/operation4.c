@@ -28,8 +28,8 @@ void operation4(const char* filename,const char* query){
         write(STDOUT_FILENO,"\n",1);
         return;
     }
-    char line_buffer[MAX_LEN];
     char buffer[1];
+    char line_buffer[MAX_LEN];
     int line_idx = 0;
     uint64_t line_number = 1;
 
@@ -44,7 +44,7 @@ void operation4(const char* filename,const char* query){
     char* star_pos = strchr(query_1, '*');
     
     if (star_pos == query_1 || *(star_pos + 1) == '\0') {
-        write(STDOUT_FILENO,"\n",1);
+        write(STDOUT_FILENO,"\n",1); // 규칙 위반: '*'가 맨 앞이나 맨 뒤에 있는 경우
         return;
     }
 
