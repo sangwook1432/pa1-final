@@ -45,11 +45,9 @@ void operation2(const char* filename,const char* query){
 
     int fd = open(filename,O_RDONLY);
     if(fd < 0) return;
-
-    char line_buffer[MAX_LEN];
     char buffer[1];
+    char line_buffer[MAX_LEN];
     int line_idx = 0;
-    int capacity = MAX_LEN;
     uint64_t line_number = 1;
 
     while(read(fd,buffer,1) > 0){
@@ -97,6 +95,7 @@ void operation2(const char* filename,const char* query){
             write(STDOUT_FILENO," ",1);
         }
     }
+
     write(STDOUT_FILENO,"\n",1);
     close(fd);
 }
